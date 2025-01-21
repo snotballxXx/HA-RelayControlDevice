@@ -1,31 +1,30 @@
 #include <Arduino.h>
 #include "./control/HomeAssistantMqtt.h"
 #include "./control/Wifi.h"
-#include "./control/IRSender.h"
+#include "./control/Relay.h"
 #include "./control/Ota.h"
-#include "constants.h"
+
+//#include "constants.h
 
 Control::Wifi* wifi = new Control::Wifi();
 Control::HomeAssistantMqtt* homeAssistant = new Control::HomeAssistantMqtt();
-Control::IRSender* irSender = new Control::IRSender(homeAssistant);
+Control::Relay* relay = new Control::Relay(homeAssistant);
 Control::Ota* ota = new Control::Ota();
 
 void setup()
 {
-    Serial.begin(SERIAL_BAUD_RATE);
-    
+    Serial.begin(115200);
     wifi->setup();
     homeAssistant->setup();
-    irSender->setup();
+   // relay->setup();
     ota->setup();
 }
 
 void loop()
 {
     unsigned long now = millis();
-
     wifi->loop(now);
-    homeAssistant->loop(now);
-    irSender->loop(now);
+    //homeAssistant->loop(now);
+    //relay->loop(now);
     ota->loop(now);
 }

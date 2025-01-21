@@ -1,7 +1,7 @@
-#ifndef _IR_SENDER_H_
-#define _IR_SENDER_H_
+#ifndef _TMP_RELAY_H_
+#define _TMP_RELAY_H_
 
-#include "../interfaces/IArduinoBase.h"
+#include "../interfaces/IRelay.h"
 #include "../interfaces/ITopicCallback.h"
 
 namespace Interfaces
@@ -11,16 +11,17 @@ namespace Interfaces
 
 namespace Control
 {
-    class IRSender : public Interfaces::IAduninoBase, public Interfaces::ITopicCallback
+    class Relay : public Interfaces::IRelay, public Interfaces::ITopicCallback
     {
         Interfaces::IMessenger* _messenger;
+        bool _relayState;
 
         public:
-        IRSender(Interfaces::IMessenger* messenger);
+        Relay(Interfaces::IMessenger* messenger);
         virtual void messageReceived(const String& topic, const String& payload);
         virtual void loop(unsigned long time);
         virtual void setup();        
     };    
 }
 
-#endif  //!_IR_SENDER_H_
+#endif  //!_TMP_RELAY_H_

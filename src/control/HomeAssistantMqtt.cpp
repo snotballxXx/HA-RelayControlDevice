@@ -5,71 +5,35 @@
 #include "interfaces/IWifi.h"
 #include "interfaces/ITopicCallback.h"
 #include "../constants.h"
-#include "../utils/composeClientId.h"
+#include "../utils/Helpers.h"
 
 using namespace Control;
 
-String discoveryMessage = "{    \
-  \"device\": {    \
-    \"identifiers\": [    \
-      \"{ID}\"    \
-    ],    \
-    \"name\": \"Fire\",    \
-    \"model\": \"FIRE-200\",    \
-    \"manufacturer\": \"DeviceCo\",    \
-    \"sw_version\": \"2.0\"    \
-  },    \
-  \"origin\": {    \
-    \"name\": \"FireCtrl Device {ID}\"    \
-  },    \
-  \"components\": {    \
-     \"power\": {          \
-       \"platform\": \"button\",          \
-       \"device_class\": \"restart\",          \
-       \"name\": \"Power\",    \
-	   \"icon\": \"mdi:power\",    \
-       \"payload_press\": \"1\",	       \
-       \"command_topic\": \"home/{ID}/command\",  	             \
-       \"unique_id\": \"{ID}_power\"          \
-     },    \
-     \"heat_on_off\": {          \
-       \"platform\": \"button\",          \
-       \"device_class\": \"restart\",          \
-       \"name\": \"Heater\",    \
-	   \"icon\": \"mdi:heat-wave\",    \
-       \"payload_press\": \"2\",	       \
-       \"command_topic\": \"home/{ID}/command\",  	             \
-       \"unique_id\": \"{ID}_heat_on_off\"          \
-     },    \
-     \"flame_on_off\": {          \
-       \"platform\": \"button\",          \
-       \"device_class\": \"restart\",          \
-       \"name\": \"Flame\",    \
-	   \"icon\": \"mdi:fire-circle\",    \
-       \"payload_press\": \"3\",	       \
-       \"command_topic\": \"home/{ID}/command\",  	             \
-       \"unique_id\": \"{ID}_flame_on_off\"          \
-     },    \
-     \"temp_up\": {          \
-       \"platform\": \"button\",          \
-       \"device_class\": \"restart\",          \
-       \"name\": \"Temp Up\",    \
-	   \"icon\": \"mdi:thermometer-chevron-up\",    \
-       \"payload_press\": \"4\",	       \
-       \"command_topic\": \"home/{ID}/command\",  	             \
-       \"unique_id\": \"{ID}_temp_up\"          \
-     },    \
-     \"temp_down\": {          \
-       \"platform\": \"button\",          \
-       \"device_class\": \"restart\",          \
-       \"name\": \"Temp Down\",    \
-	   \"icon\": \"mdi:thermometer-chevron-down\",    \
-       \"payload_press\": \"5\",	       \
-       \"command_topic\": \"home/{ID}/command\",  	             \
-       \"unique_id\": \"{ID}_temp_down\"          \
-     }    \
-  }    \
-}";
+String discoveryMessage = "{ \
+   \"device\": {      \
+     \"identifiers\": [      \
+       \"{ID}\"      \
+     ],      \
+     \"name\": \"Relay-{ID}\",      \
+     \"model\": \"v0001\",      \
+     \"manufacturer\": \"DeviceCo\",      \
+     \"sw_version\": \"1.0\"      \
+   },      \
+   \"origin\": {      \
+     \"name\": \"Relay Device\"      \
+   },      \
+   \"components\": {     \
+     \"switch\": {      \
+       \"platform\": \"switch\",      \
+       \"device_class\": \"switch\",      \
+       \"name\": \"switch\",      \
+       \"state_topic\": \"home/{ID}/state\",           \
+       \"command_topic\": \"home/{ID}/command\", \
+       \"value_template\": \"{{ value_json.state }}\",     \
+       \"unique_id\": \"{ID}_room_switch\"      \
+     }     \
+   }      \
+ }";
 
 void callback(char *topic, byte *payload, unsigned int length, void *p)
 {
@@ -88,6 +52,7 @@ HomeAssistantMqtt::HomeAssistantMqtt()
 
 void HomeAssistantMqtt::setup()
 {
+  Serial.println("Setup starting in HA");
   _espClient = new WiFiClient;
   _client = new PubSubClient(*_espClient);
 
@@ -95,8 +60,10 @@ void HomeAssistantMqtt::setup()
   _client->setServer(MQTT_SERVER, 1883);
   _client->setCallback(callback, (void *)this);
 
-  _clientId = Utils::composeClientID();
+  _clientId = Utils::Helpers::composeClientID();
   _clientId.replace(':', '-');
+  Serial.println("WiFi connected");
+  Serial.println("Setup complete in HA");
 }
 
 void HomeAssistantMqtt::loop(unsigned long time)
