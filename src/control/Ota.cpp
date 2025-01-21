@@ -19,7 +19,6 @@ void Ota::setup()
     ElegantOTA.begin(&server);
     server.begin();
     Serial.println("HTTP server started");
-
     Serial.println("Setup completed in Ota");
 }
 

@@ -16,7 +16,7 @@ void setup()
     Serial.begin(115200);
     wifi->setup();
     homeAssistant->setup();
-   // relay->setup();
+    relay->setup();
     ota->setup();
 }
 
@@ -24,7 +24,7 @@ void loop()
 {
     unsigned long now = millis();
     wifi->loop(now);
-    //homeAssistant->loop(now);
-    //relay->loop(now);
+    homeAssistant->loop(now);
+    relay->loop(now);
     ota->loop(now);
 }
